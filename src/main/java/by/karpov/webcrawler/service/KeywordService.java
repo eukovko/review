@@ -1,6 +1,8 @@
 package by.karpov.webcrawler.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public class KeywordService {
                 keyWordList.add("home");
             }
             // fill a list of keywords
-            if (!keyWord.matches(YES) & !keyWord.equals(TEST)) {
+            if (!keyWord.matches(YES) && !keyWord.equals(TEST)) {
                 if (!keyWord.equals("")) {
                     keyWordList.add(keyWord);
                 }

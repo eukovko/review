@@ -40,7 +40,7 @@ public class SpiderBotImpl implements SpiderBot<Page> {
         System.out.println(urlList.toString());
         for (String url : urlList) {
             List<String> lineList = getLineList(url);
-            pageList.add(new Page.Builder().setUrl(url).setLines(lineList).build());
+            pageList.add(new Page(url, lineList));
 
         }
         return pageList;
@@ -79,21 +79,53 @@ public class SpiderBotImpl implements SpiderBot<Page> {
         return keyWordMap;
     }
 
+    private void throwException() throws IOException {
+        throw new IOException();
+    }
+
     /**
      * @return returns a list of URL with a limited number of @see maxAmountPages.
      */
-    @SneakyThrows
     private List<String> getURLList(String startUrl,int depth)  {
-         Document document = this.document.getDocument(startUrl);
-        return document
-                .select("a")
-                .stream()
-                .map(c -> c.attr("href"))
-                .filter(c -> c.matches(URL_REG_EX))
-                //.filter(c->c.contains("en.wikipedia.org/wiki"))
-                .distinct()
-                .limit(depth)
-                .collect(Collectors.toList());
+         Optional<Document> document = this.document.getDocument(startUrl);
+
+        try {
+            throwException();
+        } catch (IOException e) {
+            // logging
+        }
+        return document.map(d -> d.select("a")
+            .stream()
+            .map(c -> c.attr("href"))
+            .filter(c -> c.matches(URL_REG_EX))
+            //.filter(c->c.contains("en.wikipedia.org/wiki"))
+            .distinct()
+            .limit(depth)
+            .collect(Collectors.toList()))
+            .orElse(Collections.emptyList());
+
+//         document.ifPresent(d -> d.select("a")
+//             .stream()
+//             .map(c -> c.attr("href"))
+//             .filter(c -> c.matches(URL_REG_EX))
+//             //.filter(c->c.contains("en.wikipedia.org/wiki"))
+//             .distinct()
+//             .limit(depth)
+//             .collect(Collectors.toList()));
+//
+//
+//        if (document.isPresent()) {
+//            return document.get()
+//                .select("a")
+//                .stream()
+//                .map(c -> c.attr("href"))
+//                .filter(c -> c.matches(URL_REG_EX))
+//                //.filter(c->c.contains("en.wikipedia.org/wiki"))
+//                .distinct()
+//                .limit(depth)
+//                .collect(Collectors.toList());
+//        }
+//        return null;
     }
 
     /**

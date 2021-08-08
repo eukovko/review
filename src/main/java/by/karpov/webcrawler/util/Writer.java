@@ -1,8 +1,10 @@
 package by.karpov.webcrawler.util;
 
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -11,6 +13,9 @@ import java.nio.file.Paths;
 import java.util.List;
 @Component
 public class Writer {
+
+    @Value("/file/data.txt")
+    File file;
     /**
      * Saves the result of the program to a file
      * @param fileName file name to save
@@ -21,6 +26,9 @@ public class Writer {
      */
    @SneakyThrows
     public  void writeCSVFile(String fileName, List<String> stringsForCSV) {
+       if (Files.exists(Paths.get(fileName))) {
+           throw new RuntimeException();
+       }
         Path path = Files.createFile(Paths.get(fileName));
         Files.write(path, stringsForCSV, StandardCharsets.UTF_8);
         System.out.println("File save as - " + "\"" + fileName + ".txt" + "\"");

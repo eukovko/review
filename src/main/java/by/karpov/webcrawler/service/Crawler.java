@@ -3,7 +3,7 @@ package by.karpov.webcrawler.service;
 import by.karpov.webcrawler.entity.Page;
 import by.karpov.webcrawler.util.Writer;
 import lombok.RequiredArgsConstructor;
-import org.jsoup.Connection;
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,20 +13,21 @@ import java.util.Scanner;
 
 @Component
 @RequiredArgsConstructor
+@Log4j
 public class Crawler {
-    private  final Writer writer;
-    private  final SpiderBot spiderBot;
-    private  final Scanner scanner;
-    private  final DepthService depthService;
-    private  final KeywordService keywordService;
-    private  final FilenameService filenameService;
+    private final Writer writer;
+    private final SpiderBot<Page> spiderBot;
+    private final Scanner scanner;
 
-    public void process(String startUrl){
-        var keyWordList = keywordService.getKeyWordList();
-        var depth = depthService.getDepth();
+    // new Crawler(url, depth, keywords)
+    // crawler.process()
+
+    // main purpose is to create list of matches
+    // single responsibility
+    public void process(String startUrl, int depth, List<String> keyWordList, String filename){
         List<String> stringsForCSV = new ArrayList<>(depth + 1);
         stringsForCSV.add("URL, [" + keyWordList.toString() + "]");
-        List<Page> pageList = spiderBot.getPageList(startUrl,depth);
+        List<Page> pageList = spiderBot.getPageList(startUrl, depth);
         Map<String, String> shortInfoMap;
         int count = 0;
         // fill short info map
@@ -37,6 +38,7 @@ public class Crawler {
             count++;
         }
 
+        // move to logger
         System.out.println("Choose a number from 1 to " + count + " for clarification.");
         int number = scanner.nextInt();
         // get content for selected page and prepare file to save
@@ -47,7 +49,7 @@ public class Crawler {
 
 
         // save file
-        writer.writeCSVFile(filenameService.getFilename(), stringsForCSV);
+        writer.writeCSVFile(filename, stringsForCSV);
 
     }
 }
